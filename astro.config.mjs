@@ -2,9 +2,16 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import tailwindcss from '@tailwindcss/vite';
+import { satteri } from '@astrojs/markdown-satteri';
+import { externalLinks } from './src/plugins/external-links.mjs';
 
 // https://astro.build/config
 export default defineConfig({
+	markdown: {
+		processor: satteri({
+			hastPlugins: [externalLinks],
+		}),
+	},
 	integrations: [
 		starlight({
 			title: 'Testing with .NET',

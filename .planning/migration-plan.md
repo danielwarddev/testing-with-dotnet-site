@@ -16,14 +16,15 @@ Rebuild the site on a fresh scaffold of the latest Astro and Starlight, then por
 - [x] Delete the starter template's own pages and images.
 - [ ] **Verify:** the empty site looks like the current one in light and dark mode.
 
-## Chunk 2: Remark plugin
+## Chunk 2: Markdown plugin
 
-- [ ] Port `src/plugins/remark-external-links.mjs` and register it under `markdown.remarkPlugins`.
-- [ ] Add a temporary test page with four links: a Microsoft Learn link, another external link, an internal link and an anchor link.
-- [ ] **Verify:**
+- [x] Port `src/plugins/remark-external-links.mjs`. Astro 7 renders Markdown with Sätteri, and `markdown.remarkPlugins` is deprecated, so the plugin became a Sätteri HAST plugin in `src/plugins/external-links.mjs`, registered through `markdown.processor: satteri({ hastPlugins })`.
+- [x] Add temporary `.md` and `.mdx` test pages with four kinds of link: a Microsoft Learn link, another external link, an internal link and an anchor link.
+- [x] **Verify:**
   - Only the Learn link gets `wt.mc_id=MVP_367508`. It uses `&` instead of `?` when the URL already has a query string.
   - Only the external links get `target="_blank"` and `rel="noopener noreferrer"`.
-- [ ] Remove the test page.
+  - Starlight's own transforms (asides, heading anchor links) still work.
+- [x] Remove the test pages.
 
 ## Chunk 3: CodeTabs and the `@components` alias
 
