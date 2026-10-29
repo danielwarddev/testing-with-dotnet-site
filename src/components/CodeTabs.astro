@@ -1,0 +1,51 @@
+---
+import { Code, Tabs, TabItem } from "@astrojs/starlight/components";
+
+const { baseFilePath } = Astro.props;
+
+const codeFiles = import.meta.glob(
+  '/src/content/docs/**/*.{cs,fs,vb}', {
+    query: '?raw',
+    import: 'default'
+  }
+);
+
+async function tryLoadFile(fileExtension: string): Promise<string | null> {
+  const pageDirectory = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
+  const filePathWithoutExtension = `/src/content/docs${pageDirectory}${baseFilePath}`;
+  const fullPath = `${filePathWithoutExtension}${fileExtension}`;
+  
+  const loader = codeFiles[fullPath];
+  if (!loader) {
+    return null;
+  }
+  
+  return await loader() as string;
+};
+
+const cSharpCode = await tryLoadFile('.cs');
+const fSharpCode = await tryLoadFile('.fs');
+const visualBasicCode = await tryLoadFile('.vb');
+
+if (!cSharpCode && !fSharpCode && !visualBasicCode) {
+  throw new Error(`CodeTabs found no .cs, .fs or .vb files for "${baseFilePath}" on page ${Astro.url.pathname}`);
+}
+---
+
+<Tabs syncKey="code-language">
+  {cSharpCode && (
+    <TabItem label="C#">
+      <Code code={cSharpCode} lang="csharp" title="" />
+    </TabItem>
+  )}
+  {fSharpCode && (
+    <TabItem label="F#">
+      <Code code={fSharpCode} lang="fsharp" title="" />
+    </TabItem>
+  )}
+  {visualBasicCode && (
+    <TabItem label="Visual Basic">
+      <Code code={visualBasicCode} lang="vb" title="" />
+    </TabItem>
+  )}
+</Tabs>

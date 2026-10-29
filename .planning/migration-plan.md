@@ -28,13 +28,13 @@ Rebuild the site on a fresh scaffold of the latest Astro and Starlight, then por
 
 ## Chunk 3: CodeTabs and the `@components` alias
 
-- [ ] Port `src/components/CodeTabs.astro`.
-- [ ] Set up the `@components` alias. First try tsconfig `paths` without `baseUrl`, because `baseUrl` is deprecated in TS 6. Only add a `vite.resolve.alias` entry if the build fails.
-- [ ] Migrate one page with code samples to test it, such as `concepts/mocking`.
+- [x] Port `src/components/CodeTabs.astro`.
+- [x] Set up the `@components` alias. tsconfig `paths` without `baseUrl` works, so no `vite.resolve.alias` entry is needed.
+- [x] Migrate one page with code samples to test it, such as `concepts/mocking`.
 - [ ] **Verify:**
-  - The C#, F# and VB tabs all render with code in them.
-  - The language you pick carries over to other pages.
-  - CodeTabs builds file paths from `Astro.url.pathname`. If that resolves differently, the tabs render empty without any error.
+  - [x] The C#, F# and VB tabs all render with code in them.
+  - [ ] The language you pick carries over to other pages.
+  - [x] CodeTabs builds file paths from `Astro.url.pathname`, and in dev, a URL with no trailing slash rendered empty tabs. CodeTabs now adds the trailing slash itself, and throws an error if it finds no code files.
 
 ## Chunk 4: Content
 

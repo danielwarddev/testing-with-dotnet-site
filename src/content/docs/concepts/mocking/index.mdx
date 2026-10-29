@@ -1,0 +1,63 @@
+---
+title: Mocking, faking, and other test doubles
+description: A guide in my new Starlight docs site.
+---
+
+import CodeTabs from '@components/CodeTabs.astro';
+
+_Definitions for this page are lagely taken from Gerard Meszaros's book, referenced here: http://xunitpatterns.com/Test%20Double.html_
+
+Mocks, fakes, stubs, and more are all examples of **test doubles**. Test doubles serve as replacements for real parts of the system under test (SUT). Using these simpler replacements can help isolate the logic being tested within a single test, making it easier to both write and diagnose upon failure.
+
+Every other term in this article are all specific examples of test doubles.
+
+While technically incorrect, these different concepts are often coloquially all referred to as "mocks." For practical testing purposes in .NET, you probably don't need to know the difference between these terms. Mocking libraries make creating any of them fairly trivial, and other people will probably understand what you mean regardless of the term you use. Even so, the differences are outlined below:
+
+## Test double definitions
+
+* **Test double**. Everything else in this list is a test double; umbrella term for any kind of replacement object used in a test in place of the real one
+* **Dummy**. Doesn't actually do anything; only exists to be passed to the SUT so the SUT can have its parameters satisfied
+* **Stub**. Returns predefined values so that the SUT can progress; its interactions aren't verified
+* **Spy**.  A specific kind of stub that records how it was used so that its interactions can be verified
+* **Mock**. Does the job of both a stub and a spy; returns some predefined values and also verifies expected interactions
+* **Fake**. Not needed often in .NET due to effectiveness of mocking libraries, and probably the "fanciest" type of test double; often means a hand-written implementation; has some kind of implementation, but simpler than the real production one
+
+## Test double definitions and examples
+
+Examples shown use xUnit and NSubstitute.
+
+### Dummy
+
+Doesn't actually do anything; only exists to be passed to the SUT so the SUT can have its parameters satisfied
+
+<CodeTabs baseFilePath="code/Dummy" />
+
+### Stub
+
+Returns predefined values so that the SUT can progress; its interactions aren't verified
+
+<CodeTabs baseFilePath="code/Stub" />
+
+### Spy
+
+A specific kind of stub that records how it was used so that its interactions can be verified
+
+:::caution[Code smell!]
+The use of spies to assert that calls were made can often be a code smell. If that's all the test cares about, it can be an indicator that the test may be better off as an integration test. Integration tests ensure that multiple units work together correctly, which is often what a spy is trying to verify. Integration tests can check external state (such as a containerized database) to ensure expected behavior.
+
+However, spies sometimes offer a useful middle ground, such as when there would not be much value in simulating an external dependency, or when it would not be practical to do so.
+:::
+
+<CodeTabs baseFilePath="code/Spy" />
+
+### Mock
+
+Does the job of both a stub and a spy; returns some predefined values and also verifies expected interactions.
+
+<CodeTabs baseFilePath="code/Mock" />
+
+### Fake
+
+Not needed often in .NET due to effectiveness of mocking libraries, and probably the "fanciest" type of test double; often means a hand-written implementation; has some kind of implementation, but simpler than the real production one
+
+<CodeTabs baseFilePath="code/Fake" />
