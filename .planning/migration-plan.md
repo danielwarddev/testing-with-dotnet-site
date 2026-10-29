@@ -9,11 +9,11 @@ Rebuild the site on a fresh scaffold of the latest Astro and Starlight, then por
 
 ## Chunk 1: Theme and branding
 
-- [ ] Copy `src/assets/logo-light.svg`, `src/assets/logo-dark.svg`, `public/favicon.svg` and `public/favicon-light.svg`. Leave out `old_favicon.svg` and `houston.webp`.
-- [ ] Port `src/styles/global.css`: the accent and gray colour palettes, `--sl-content-width`, the 15px font size, the logo size, and the xUnit hero image fix.
-- [ ] Set the title, the logo and `customCss` in `astro.config.mjs`.
-- [ ] Point the GitHub link to `danielwarddev/testing-with-dotnet-site`. It currently links to `withastro/starlight`.
-- [ ] Delete the starter template's own pages and images.
+- [x] Copy `src/assets/logo-light.svg`, `src/assets/logo-dark.svg`, `public/favicon.svg` and `public/favicon-light.svg`. Leave out `old_favicon.svg` and `houston.webp`.
+- [x] Port `src/styles/global.css`: the accent and gray colour palettes, `--sl-content-width`, the 15px font size, the logo size, and the xUnit hero image fix.
+- [x] Set the title, the logo and `customCss` in `astro.config.mjs`.
+- [x] Point the GitHub link to `danielwarddev/testing-with-dotnet-site`. It currently links to `withastro/starlight`.
+- [x] Delete the starter template's own pages and images.
 - [ ] **Verify:** the empty site looks like the current one in light and dark mode.
 
 ## Chunk 2: Remark plugin
@@ -41,6 +41,7 @@ Rebuild the site on a fresh scaffold of the latest Astro and Starlight, then por
 - [ ] Rebuild the sidebar in `astro.config.mjs`.
   - Add the `assertion-libraries` pages, which are missing from the current sidebar.
   - Drop the starter "Example Guide" and "Reference" entries.
+- [ ] `index.mdx` uses `houston.webp` twice: for the hero image and an `<Image>`. Point both at a different image, because Houston isn't being brought over.
 - [ ] Change the relative CodeTabs imports in `frameworks/tunit` and `frameworks/mstest` to `@components/CodeTabs.astro`.
 - [ ] **Verify:**
   - `npm run build` succeeds, and the page count matches the old site (28 pages before cleanup).

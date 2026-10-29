@@ -7,20 +7,13 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
 	integrations: [
 		starlight({
-			title: 'Docs with Tailwind',
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
-			sidebar: [
-				{
-					label: 'Guides',
-					items: [
-						// Each item here is one entry in the navigation menu.
-						{ label: 'Example Guide', slug: 'guides/example' },
-					],
-				},
-				{
-					label: 'Reference',
-					items: [{ autogenerate: { directory: 'reference' } }],
-				},
+			title: 'Testing with .NET',
+			logo: {
+				light: './src/assets/logo-light.svg',
+				dark: './src/assets/logo-dark.svg',
+			},
+			social: [
+				{ icon: 'github', label: 'GitHub', href: 'https://github.com/danielwarddev/testing-with-dotnet-site' },
 			],
 			customCss: ['./src/styles/global.css'],
 		}),

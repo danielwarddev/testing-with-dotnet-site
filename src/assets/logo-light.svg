@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Rounded rectangle background -->
+    <rect x="4" y="22" width="56" height="20" rx="4" ry="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+
+    <!-- Terminal prompt with "tw/.NET" - centered -->
+    <text x="9" y="36" font-family="monospace" font-size="11" font-weight="bold" fill="#64748b">&gt;</text>
+    <text x="16" y="36" font-family="monospace" font-size="11" font-weight="bold" fill="#3b82f6">tw/</text>
+    <text x="31" y="36" font-family="monospace" font-size="11" font-weight="bold" fill="#059669">.NET</text>
+</svg>
