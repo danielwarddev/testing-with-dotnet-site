@@ -19,9 +19,9 @@ it('should render a C#, F# and Visual Basic tab with the code from each file', a
 	const tabs = getTabData(html);
 
 	expect(tabs).toEqual([
-		{ label: 'C#', language: 'csharp', code: readCodeFileAsRendered('AllLanguages.cs') },
-		{ label: 'F#', language: 'fsharp', code: readCodeFileAsRendered('AllLanguages.fs') },
-		{ label: 'Visual Basic', language: 'vb', code: readCodeFileAsRendered('AllLanguages.vb') },
+		{ label: 'C#', language: 'csharp', code: readCodeFileNormalizedLikeExpressiveCode('AllLanguages.cs') },
+		{ label: 'F#', language: 'fsharp', code: readCodeFileNormalizedLikeExpressiveCode('AllLanguages.fs') },
+		{ label: 'Visual Basic', language: 'vb', code: readCodeFileNormalizedLikeExpressiveCode('AllLanguages.vb') },
 	]);
 });
 
@@ -36,8 +36,8 @@ it('should only render tabs for the languages that have a file', async () => {
 	const tabs = getTabData(html);
 
 	expect(tabs).toEqual([
-		{ label: 'C#', language: 'csharp', code: readCodeFileAsRendered('MissingFSharp.cs') },
-		{ label: 'Visual Basic', language: 'vb', code: readCodeFileAsRendered('MissingFSharp.vb') },
+		{ label: 'C#', language: 'csharp', code: readCodeFileNormalizedLikeExpressiveCode('MissingFSharp.cs') },
+		{ label: 'Visual Basic', language: 'vb', code: readCodeFileNormalizedLikeExpressiveCode('MissingFSharp.vb') },
 	]);
 });
 
@@ -74,25 +74,23 @@ function getTabData(html: string) {
 	return labels.map((label, i) => ({
 		label,
 		language: panels[i].querySelector('[data-language]')!.getAttribute('data-language'),
-		code: decodeExpressiveCodeText(panels[i].querySelector('[data-code]')!.getAttribute('data-code') ?? ''),
+		code: decodeExpressiveCodeNewlines(panels[i].querySelector('[data-code]')!.getAttribute('data-code') ?? ''),
 	}));
 }
 
 // Starlight uses Expressive Code to render nice-looking code blocks
-// We assert against the actual rendered HTML to make sure it matches the code files' contents,
-// so we need to undo its encoding to make that assertion, which is what this method is for
-// Note that this makes the asserts strong but brittle
+// It changes \n into \u007f, which would make a direct string comparison against our code file fail
+// So, decode the newlines back to how the file has them to allow for simple assertions
+// Note that this makes the asserts stronger but a little brittle
 // Pro: we assert the exact code content is rendered as expected
 // Con: if EC ever changes how it renders, these tests may break even though nothing is actually wrong with the app
-function decodeExpressiveCodeText(value: string) {
+function decodeExpressiveCodeNewlines(value: string) {
 	return value.replaceAll('\u007f', '\n');
 }
  
-// Similar to decodeExpressiveCodeText, this is needed because of Expressive Code
-// EC removes trailing whitespace and replaces \r\n with \n. We can't get that information back,
-// because we can't know what the original line endings or whitespace counts were.
-// So, just normalize the line endings and whitespace to look like how EC does it
-// This lets us assert against it successfully
-function readCodeFileAsRendered(fileName: string) {
+// Expressive Code removes trailing whitespace and replaces \r\n with \nWe can't get that information back, because we can't know what the original line endings or whitespace counts were.
+// So, normalize the line endings and whitespace to look like how EC renders it to make sure our
+// assertions are accurate
+function readCodeFileNormalizedLikeExpressiveCode(fileName: string) {
 	return readFileSync(`${FIXTURE_DIRECTORY}/${fileName}`, 'utf8').replaceAll('\r\n', '\n').trimEnd();
 }
