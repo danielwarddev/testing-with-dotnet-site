@@ -1,4 +1,6 @@
+import { within } from '@testing-library/dom';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
+import { Window } from 'happy-dom';
 import { readdirSync, readFileSync } from 'node:fs';
 import { beforeAll, expect, it } from 'vitest';
 import CodeTabs from '@components/CodeTabs.astro';
@@ -59,13 +61,17 @@ function getFixtureCodeFiles() {
 }
 
 function getTabs(html: string) {
-	const labels = [...html.matchAll(/role="tab" href="#tab-panel-[^"]+"[^>]*>([^<]+)</g)].map((match) => match[1].trim());
-	const panels = html.split(/id="tab-panel-[^"]+"[^>]*role="tabpanel"/).slice(1);
+	const document = new Window().document as unknown as Document;
+	document.body.innerHTML = html;
+
+	const body = within(document.body);
+	const labels = body.getAllByRole('tab').map((tab) => tab.textContent.trim());
+	const panels = body.getAllByRole('tabpanel', { hidden: true });
 
 	return labels.map((label, index) => ({
 		label,
-		language: panels[index].match(/data-language="([^"]+)"/)?.[1],
-		code: decodeExpressiveCodeText(panels[index].match(/data-code="([^"]*)"/)?.[1] ?? ''),
+		language: panels[index].querySelector('[data-language]')?.getAttribute('data-language'),
+		code: decodeExpressiveCodeText(panels[index].querySelector('[data-code]')?.getAttribute('data-code') ?? ''),
 	}));
 }
 
@@ -76,13 +82,7 @@ function getTabs(html: string) {
 // Pro: we assert the exact code content is rendered as expected
 // Con: if EC ever changes how it renders, these tests may break even though nothing is actually wrong with the app
 function decodeExpressiveCodeText(value: string) {
-	return value
-		.replaceAll('\u007f', '\n')
-		.replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
-		.replaceAll('&quot;', '"')
-		.replaceAll('&lt;', '<')
-		.replaceAll('&gt;', '>')
-		.replaceAll('&amp;', '&');
+	return value.replaceAll('\u007f', '\n');
 }
  
 // Similar to decodeExpressiveCodeText, this is needed because of Expressive Code
