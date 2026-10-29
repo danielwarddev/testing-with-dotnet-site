@@ -1,31 +1,33 @@
 ---
 import { Code, Tabs, TabItem } from "@astrojs/starlight/components";
 
-const { baseFilePath } = Astro.props;
+interface Props {
+  baseFilePath: string;
+  codeFiles?: Record<string, string>;
+}
 
-const codeFiles = import.meta.glob(
-  '/src/content/docs/**/*.{cs,fs,vb}', {
-    query: '?raw',
-    import: 'default'
-  }
-);
+const {
+  baseFilePath,
+  codeFiles = import.meta.glob<string>(
+    '/src/content/docs/**/*.{cs,fs,vb}', {
+      eager: true,
+      query: '?raw',
+      import: 'default'
+    }
+  ),
+} = Astro.props;
 
-async function tryLoadFile(fileExtension: string): Promise<string | null> {
+function tryGetFile(fileExtension: string): string | null {
   const pageDirectory = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
   const filePathWithoutExtension = `/src/content/docs${pageDirectory}${baseFilePath}`;
   const fullPath = `${filePathWithoutExtension}${fileExtension}`;
-  
-  const loader = codeFiles[fullPath];
-  if (!loader) {
-    return null;
-  }
-  
-  return await loader() as string;
-};
 
-const cSharpCode = await tryLoadFile('.cs');
-const fSharpCode = await tryLoadFile('.fs');
-const visualBasicCode = await tryLoadFile('.vb');
+  return codeFiles[fullPath] ?? null;
+}
+
+const cSharpCode = tryGetFile('.cs');
+const fSharpCode = tryGetFile('.fs');
+const visualBasicCode = tryGetFile('.vb');
 
 if (!cSharpCode && !fSharpCode && !visualBasicCode) {
   throw new Error(`CodeTabs found no .cs, .fs or .vb files for "${baseFilePath}" on page ${Astro.url.pathname}`);

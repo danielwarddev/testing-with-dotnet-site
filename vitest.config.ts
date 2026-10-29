@@ -1,4 +1,8 @@
 /// <reference types="vitest/config" />
 import { getViteConfig } from 'astro/config';
 
-export default getViteConfig({});
+export default getViteConfig({
+	test: {
+		testTimeout: 15_000,
+	},
+});

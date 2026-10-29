@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import { markdownToHtml } from "satteri";
-import { externalLinks } from "./external-links.mjs";
+import { externalLinks } from "../plugins/external-links.mjs";
 
 async function renderLink(url) {
   const { html } = await markdownToHtml(`[link](${url})`, { hastPlugins: [externalLinks] });
