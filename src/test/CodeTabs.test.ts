@@ -1,6 +1,6 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { readdirSync, readFileSync } from 'node:fs';
-import { beforeAll, expect, test } from 'vitest';
+import { beforeAll, expect, it } from 'vitest';
 import CodeTabs from '@components/CodeTabs.astro';
 
 const PAGE_PATH = '/fake-test-page/';
@@ -12,7 +12,7 @@ beforeAll(async () => {
 	container = await AstroContainer.create();
 });
 
-test('renders a C#, F# and Visual Basic tab with the code from each file', async () => {
+it('should render a C#, F# and Visual Basic tab with the code from each file', async () => {
 	const tabs = getTabs(await renderCodeTabs('code/AllLanguages'));
 
 	expect(tabs).toEqual([
@@ -22,12 +22,12 @@ test('renders a C#, F# and Visual Basic tab with the code from each file', async
 	]);
 });
 
-test('finds the files when the page URL has no trailing slash', async () => {
+it('should find the files when the page URL has no trailing slash', async () => {
 	const tabs = getTabs(await renderCodeTabs('code/AllLanguages', '/fake-test-page'));
 	expect(tabs.map((tab) => tab.label)).toEqual(['C#', 'F#', 'Visual Basic']);
 });
 
-test('only renders tabs for the languages that have a file', async () => {
+it('should only render tabs for the languages that have a file', async () => {
 	const tabs = getTabs(await renderCodeTabs('code/MissingFSharp'));
 
 	expect(tabs).toEqual([
@@ -36,7 +36,7 @@ test('only renders tabs for the languages that have a file', async () => {
 	]);
 });
 
-test('throws when no code files exist for the base file path', async () => {
+it('should throw when no code files exist for the base file path', async () => {
 	await expect(renderCodeTabs('code/DoesNotExist')).rejects.toThrow(
 		`CodeTabs found no .cs, .fs or .vb files for "code/DoesNotExist" on page ${PAGE_PATH}`,
 	);
