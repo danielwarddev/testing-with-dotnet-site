@@ -16,9 +16,9 @@ it('should render a C#, F# and Visual Basic tab with the code from each file', a
 	const tabs = getTabs(await renderCodeTabs('code/AllLanguages'));
 
 	expect(tabs).toEqual([
-		{ label: 'C#', language: 'csharp', code: readFixture('AllLanguages.cs') },
-		{ label: 'F#', language: 'fsharp', code: readFixture('AllLanguages.fs') },
-		{ label: 'Visual Basic', language: 'vb', code: readFixture('AllLanguages.vb') },
+		{ label: 'C#', language: 'csharp', code: readCodeFileAsRendered('AllLanguages.cs') },
+		{ label: 'F#', language: 'fsharp', code: readCodeFileAsRendered('AllLanguages.fs') },
+		{ label: 'Visual Basic', language: 'vb', code: readCodeFileAsRendered('AllLanguages.vb') },
 	]);
 });
 
@@ -31,8 +31,8 @@ it('should only render tabs for the languages that have a file', async () => {
 	const tabs = getTabs(await renderCodeTabs('code/MissingFSharp'));
 
 	expect(tabs).toEqual([
-		{ label: 'C#', language: 'csharp', code: readFixture('MissingFSharp.cs') },
-		{ label: 'Visual Basic', language: 'vb', code: readFixture('MissingFSharp.vb') },
+		{ label: 'C#', language: 'csharp', code: readCodeFileAsRendered('MissingFSharp.cs') },
+		{ label: 'Visual Basic', language: 'vb', code: readCodeFileAsRendered('MissingFSharp.vb') },
 	]);
 });
 
@@ -58,7 +58,24 @@ function getFixtureCodeFiles() {
 	);
 }
 
-function decodeAttribute(value: string) {
+function getTabs(html: string) {
+	const labels = [...html.matchAll(/role="tab" href="#tab-panel-[^"]+"[^>]*>([^<]+)</g)].map((match) => match[1].trim());
+	const panels = html.split(/id="tab-panel-[^"]+"[^>]*role="tabpanel"/).slice(1);
+
+	return labels.map((label, index) => ({
+		label,
+		language: panels[index].match(/data-language="([^"]+)"/)?.[1],
+		code: decodeExpressiveCodeText(panels[index].match(/data-code="([^"]*)"/)?.[1] ?? ''),
+	}));
+}
+
+// Starlight uses Expressive Code to render nice-looking code blocks
+// We assert against the actual rendered HTML to make sure it matches the code files' contents,
+// so we need to undo its encoding to make that assertion, which is what this method is for
+// Note that this makes the asserts strong but brittle
+// Pro: we assert the exact code content is rendered as expected
+// Con: if EC ever changes how it renders, these tests may break even though nothing is actually wrong with the app
+function decodeExpressiveCodeText(value: string) {
 	return value
 		.replaceAll('\u007f', '\n')
 		.replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
@@ -67,18 +84,12 @@ function decodeAttribute(value: string) {
 		.replaceAll('&gt;', '>')
 		.replaceAll('&amp;', '&');
 }
-
-function getTabs(html: string) {
-	const labels = [...html.matchAll(/role="tab" href="#tab-panel-[^"]+"[^>]*>([^<]+)</g)].map((match) => match[1].trim());
-	const panels = html.split(/id="tab-panel-[^"]+"[^>]*role="tabpanel"/).slice(1);
-
-	return labels.map((label, index) => ({
-		label,
-		language: panels[index].match(/data-language="([^"]+)"/)?.[1],
-		code: decodeAttribute(panels[index].match(/data-code="([^"]*)"/)?.[1] ?? ''),
-	}));
-}
-
-function readFixture(fileName: string) {
+ 
+// Similar to decodeExpressiveCodeText, this is needed because of Expressive Code
+// EC removes trailing whitespace and replaces \r\n with \n. We can't get that information back,
+// because we can't know what the original line endings or whitespace counts were.
+// So, just normalize the line endings and whitespace to look like how EC does it
+// This lets us assert against it successfully
+function readCodeFileAsRendered(fileName: string) {
 	return readFileSync(`${FIXTURE_DIRECTORY}/${fileName}`, 'utf8').replaceAll('\r\n', '\n').trimEnd();
 }
