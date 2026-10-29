@@ -15,7 +15,8 @@ beforeAll(async () => {
 });
 
 it('should render a C#, F# and Visual Basic tab with the code from each file', async () => {
-	const tabs = getTabs(await renderCodeTabs('code/AllLanguages'));
+	const html = await renderCodeTabs('code/AllLanguages');
+	const tabs = getTabData(html);
 
 	expect(tabs).toEqual([
 		{ label: 'C#', language: 'csharp', code: readCodeFileAsRendered('AllLanguages.cs') },
@@ -25,12 +26,14 @@ it('should render a C#, F# and Visual Basic tab with the code from each file', a
 });
 
 it('should find the files when the page URL has no trailing slash', async () => {
-	const tabs = getTabs(await renderCodeTabs('code/AllLanguages', '/fake-test-page'));
+	const html = await renderCodeTabs('code/AllLanguages', '/fake-test-page');
+	const tabs = getTabData(html);
 	expect(tabs.map((tab) => tab.label)).toEqual(['C#', 'F#', 'Visual Basic']);
 });
 
 it('should only render tabs for the languages that have a file', async () => {
-	const tabs = getTabs(await renderCodeTabs('code/MissingFSharp'));
+	const html = await renderCodeTabs('code/MissingFSharp');
+	const tabs = getTabData(html);
 
 	expect(tabs).toEqual([
 		{ label: 'C#', language: 'csharp', code: readCodeFileAsRendered('MissingFSharp.cs') },
@@ -60,7 +63,7 @@ function getFixtureCodeFiles() {
 	);
 }
 
-function getTabs(html: string) {
+function getTabData(html: string) {
 	const document = new Window().document as unknown as Document;
 	document.body.innerHTML = html;
 
@@ -68,10 +71,10 @@ function getTabs(html: string) {
 	const labels = body.getAllByRole('tab').map((tab) => tab.textContent.trim());
 	const panels = body.getAllByRole('tabpanel', { hidden: true });
 
-	return labels.map((label, index) => ({
+	return labels.map((label, i) => ({
 		label,
-		language: panels[index].querySelector('[data-language]')?.getAttribute('data-language'),
-		code: decodeExpressiveCodeText(panels[index].querySelector('[data-code]')?.getAttribute('data-code') ?? ''),
+		language: panels[i].querySelector('[data-language]')!.getAttribute('data-language'),
+		code: decodeExpressiveCodeText(panels[i].querySelector('[data-code]')!.getAttribute('data-code') ?? ''),
 	}));
 }
 
