@@ -14,7 +14,7 @@ Rebuild the site on a fresh scaffold of the latest Astro and Starlight, then por
 - [x] Set the title, the logo and `customCss` in `astro.config.mjs`.
 - [x] Point the GitHub link to `danielwarddev/testing-with-dotnet-site`. It currently links to `withastro/starlight`.
 - [x] Delete the starter template's own pages and images.
-- [ ] **Verify:** the empty site looks like the current one in light and dark mode.
+- [x] **Verify:** the empty site looks like the current one in light and dark mode. Colours, logo, header and fonts match. Starlight now gives the "On this page" sidebar a minimum width of `--sl-sidebar-width`, so on screens narrower than about 1650px the content column is narrower than on the old site.
 
 ## Chunk 2: Markdown plugin
 
@@ -31,9 +31,9 @@ Rebuild the site on a fresh scaffold of the latest Astro and Starlight, then por
 - [x] Port `src/components/CodeTabs.astro`.
 - [x] Set up the `@components` alias. tsconfig `paths` without `baseUrl` works, so no `vite.resolve.alias` entry is needed.
 - [x] Migrate one page with code samples to test it, such as `concepts/mocking`.
-- [ ] **Verify:**
+- [x] **Verify:**
   - [x] The C#, F# and VB tabs all render with code in them.
-  - [ ] The language you pick carries over to other pages.
+  - [x] The language you pick carries over to other pages.
   - [x] CodeTabs builds file paths from `Astro.url.pathname`, and in dev, a URL with no trailing slash rendered empty tabs. CodeTabs now adds the trailing slash itself, and throws an error if it finds no code files.
 
 ## Chunk 4: Content
