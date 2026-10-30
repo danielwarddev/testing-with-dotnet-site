@@ -1,4 +1,11 @@
 {
-  "recommendations": ["astro-build.astro-vscode"],
-  "unwantedRecommendations": []
+  "recommendations": [
+    "astro-build.astro-vscode",
+    "bradlc.vscode-tailwindcss",
+    "unifiedjs.vscode-mdx",
+    "exodiusstudios.comment-anchors"
+  ],
+  "unwantedRecommendations": [
+    "silvenon.mdx"
+  ]
 }

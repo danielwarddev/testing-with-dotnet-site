@@ -52,12 +52,18 @@ Rebuild the site on a fresh scaffold of the latest Astro and Starlight, then por
 
 ## Chunk 5: Tooling and AI files
 
-- [ ] Bring over `codegen.sh` and its `codegen` npm script, `.vscode/`, `.planning/`, `README.md`, `.claude/` and `CLAUDE.md`.
-- [ ] Rewrite `AGENTS.md`:
-  - Remove the React leftovers: the "consts instead of functions" rule, the `handle` prefix and the `on:click` syntax.
-  - Change the `class:` rule to `class:list`.
+- [x] Bring over `codegen.sh` and its `codegen` npm script, `.vscode/`, `.planning/`, `README.md`, `.claude/` and `CLAUDE.md`.
+  - `codegen.sh` now changes to `$INIT_CWD` first. `npm run` always starts scripts in the project root, so it used to create the files there instead of the folder it was run from.
+  - `.vscode/`: brought over the old `extensions.json` and `settings.json`. `launch.json` was identical.
+  - `README.md`: kept the new starter README. The old one's only custom part was a note about a `vite` override, which the new project doesn't need.
+- [x] Rewrite `AGENTS.md`:
+  - Remove the React leftovers: the "consts instead of functions" rule, the `handle` prefix and the `on:click` syntax. Already done in the old repo (`797a2f2`).
+  - Change the `class:` rule to `class:list`. No `class:` rule was left after that cleanup.
   - Keep the Site Design Philosophy section.
   - Add the code sample workflow: put files in the page's `code/` folder, create them with `npm run codegen`, write the C# first, then use the translate-code skill.
   - Add a reminder to register new pages in the sidebar.
   - Add the `dev` and `build` commands and the `@components` alias.
-- [ ] **Verify:** you review `AGENTS.md`, and `npm run codegen Foo` creates `Foo.cs`, `Foo.fs` and `Foo.vb`.
+  - Also added `npm test`, the Sätteri plugin note and the test conventions.
+- [ ] **Verify:**
+  - [ ] You review `AGENTS.md`.
+  - [x] `npm run codegen Foo` creates `Foo.cs`, `Foo.fs` and `Foo.vb` in the folder it's run from.

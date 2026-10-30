@@ -1,0 +1,8 @@
+{
+  "files.associations": {
+    "*.mdx": "mdx"
+  },
+  "emmet.includeLanguages": {
+    "mdx": "typescriptreact"
+  }
+}

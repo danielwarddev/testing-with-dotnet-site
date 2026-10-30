@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "codegen": "bash ./codegen.sh"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "^0.4.6",
