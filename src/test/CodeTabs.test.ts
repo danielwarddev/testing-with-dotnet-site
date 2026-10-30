@@ -26,7 +26,7 @@ it('should render a C#, F# and Visual Basic tab with the code from each file', a
 });
 
 it('should find the files when the page URL has no trailing slash', async () => {
-	const html = await renderComponent('code/AllLanguages', '/page-without-trailing-slash');
+	const html = await renderComponent('code/AllLanguages', '/fake-test-page');
 	const tabs = getTabData(html);
 	expect(tabs.map((tab) => tab.label)).toEqual(['C#', 'F#', 'Visual Basic']);
 });
@@ -45,6 +45,20 @@ it('should throw when no code files exist for the base file path', async () => {
 	await expect(renderComponent('code/DoesNotExist')).rejects.toThrow(
 		`CodeTabs found no .cs, .fs or .vb files for "code/DoesNotExist" on page ${PAGE_PATH}`,
 	);
+});
+
+it('should not render a tab for a code file that is empty', async () => {
+	const html = await renderComponent('code/EmptyFSharp');
+	const tabs = getTabData(html);
+
+	expect(tabs.map((tab) => tab.label)).toEqual(['C#', 'Visual Basic']);
+});
+
+it('should not render any tabs when every code file is empty', async () => {
+	const html = await renderComponent('code/AllEmpty');
+	const tabs = getTabData(html);
+
+	expect(tabs).toEqual([]);
 });
 
 function renderComponent(baseFilePath: string, pagePath = PAGE_PATH) {
@@ -70,8 +84,8 @@ function getTabData(html: string) {
 	document.body.innerHTML = html;
 
 	const body = within(document.body);
-	const labels = body.getAllByRole('tab').map((tab) => tab.textContent.trim());
-	const panels = body.getAllByRole('tabpanel', { hidden: true });
+	const labels = body.queryAllByRole('tab').map((tab) => tab.textContent.trim());
+	const panels = body.queryAllByRole('tabpanel', { hidden: true });
 
 	return labels.map((label, i) => ({
 		label,

@@ -38,14 +38,16 @@ Rebuild the site on a fresh scaffold of the latest Astro and Starlight, then por
 
 ## Chunk 4: Content
 
-- [ ] Copy everything in `src/content/docs`: the `.md`, `.mdx`, `.cs`, `.fs` and `.vb` files and the images.
-- [ ] Rebuild the sidebar in `astro.config.mjs`.
+- [x] Copy everything in `src/content/docs`: the `.md`, `.mdx`, `.cs`, `.fs` and `.vb` files and the images. Left out the starter pages (`guides/example.md`, `reference/example.md`) and two empty placeholders: `frameworks/tunit.md`, which had the same URL as `frameworks/tunit/index.mdx`, and `guides/mocking-httpclient.md`, which duplicated `how-do-i/mocking-httpclient`.
+- [x] Rebuild the sidebar in `astro.config.mjs`.
   - Add the `assertion-libraries` pages, which are missing from the current sidebar.
   - Drop the starter "Example Guide" and "Reference" entries.
-- [ ] `index.mdx` uses `houston.webp` twice: for the hero image and an `<Image>`. Point both at a different image, because Houston isn't being brought over.
-- [ ] Change the relative CodeTabs imports in `frameworks/tunit` and `frameworks/mstest` to `@components/CodeTabs.astro`.
-- [ ] **Verify:**
-  - `npm run build` succeeds, and the page count matches the old site (28 pages before cleanup).
+  - Starlight 0.39 removed `autogenerate` with a `label`, so "Naming tests" now uses `items: [{ autogenerate: { directory: 'naming' } }]`.
+- [x] `index.mdx` uses `houston.webp` twice: for the hero image and an `<Image>`. Point both at a different image, because Houston isn't being brought over. Both now use the light and dark site logos, and the hero button goes to Getting started instead of the Example Guide.
+- [x] Change the relative CodeTabs imports in `frameworks/tunit` and `frameworks/mstest` to `@components/CodeTabs.astro`.
+- [x] 14 placeholder code files on `arrange-act-assert` and `writing-testable-code` are empty. CodeTabs now skips empty files instead of treating them as missing, the same as the old site. It still throws when no files exist. Throwing on empty files is in `future-features.md`.
+- [x] **Verify:**
+  - `npm run build` succeeds with 25 pages: the old site's 28 minus the 3 dropped pages.
   - Every CodeTabs block shows its code on every page.
 
 ## Chunk 5: Tooling and AI files

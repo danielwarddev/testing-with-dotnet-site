@@ -1,0 +1,62 @@
+---
+title: Writing Testable Code
+description: A guide in my new Starlight docs site.
+---
+
+import CodeTabs from "@components/CodeTabs.astro";
+
+There are a few general guidelines that will help when writing code that is easy to test in .NET.
+
+This is certainly not an exhaustive list of good testing practices, and instead aims to simply be a short list of patterns that are high bang-for-your-buck and that seem to pop up commonly in the .NET world.
+
+## Use dependency injection rather than newing up dependencies explicitly
+
+Rather than newing up dependencies directly in your code, inject them (usually through the constructor of a class). This makes it easier to swap out implementations for testing, and also makes the dependencies of a class more explicit to avoid dependency hell.
+
+:::note[Singletons and statics]
+This also applies to singletons and static methods. Those still have their place, but ideally they won't do any complex logic - as an example, think of the static methods on `string`, such as `Equals()` and `Format()`.
+:::
+
+For instance, instead of:
+
+<CodeTabs baseFilePath="code/Dependencies_Bad" />
+
+This code will be easier to test:
+
+<CodeTabs baseFilePath="code/Dependencies_Good" />
+
+## Make interfaces for your services, even if there's only one implementation
+
+Mocks are made by creating a fake implementation of a class. In .NET, this is accomplished by using an interface. Both the real class and the fake class implement the interface, so then the tests can pass a fake service instead of the real one.
+    
+Normally, an interface is used because there are multiple real implementations of that interface, so this might feel strange if you only have one actual real implementation of a service. However, this is a common practice in .NET and makes testing much easier, so it's worth it in the long run.
+
+:::note[Technically...]
+Some libraries, such as [Pose](https://github.com/tonerdo/pose), [Typemock](https://www.typemock.com/), and [shims](https://learn.microsoft.com/en-us/visualstudio/test/using-shims-to-isolate-your-application-from-other-assemblies-for-unit-testing) make it possible to mock things like concrete classes and static methods.
+
+However, since these libraries use some more complex implementation to "magically" replace the called code for you, they also make it easier to use antipatterns to write hard-to-read code. They can be useful, such as for legacy codebases that don't have existing tests where dependencies are hard to untangle, but they aren't the norm for testing.
+:::
+
+## When something is hard to test, try splitting the logic into another class and/or using an integration test
+
+A test that is hard to write can be a symptom of either code that is 1) trying to do too much or 2) a test that is trying to do too much:
+
+1. Writing tests forces you to be the first consumer of your code. If your code is confusing to set up or use in your tests, then it's probably also confusing to use in general. This means it's also going to be difficult to maintain, especially to a developer who didn't write the code (or even yourself 6 months in the future).
+
+2. Tests that are difficult to set up (lots of mocks, complex fake data, etc.) are often a sign that the test is testing too much. Splitting out some logic into smaller, more specific services can help make each unit more testable.
+
+Alternatively, it can also be a sign that you're trying to write a unit test for what should really be an integration test. If all you're doing it setting up mocks and then verifying that methods were called in a certain way (rather than verifying actual outputs), then you may want an integration test instead, which tests that everything is hooked up correctly.
+
+## Write pure functions when possible
+
+Pure functions are functions that, given the same input, will always return the same output and have no side effects (like modifying a global variable or writing to a file). Pure functions are easier to test because you don't have to worry about the state of the system when the function is called. If you give the same arguments to the function, you'll get the same results every time, regardless of data setup.
+
+For example, this code will probably be hard to test:
+
+<CodeTabs baseFilePath="code/PureFunction_Bad" />
+
+We have to make sure the database's GetOrder() and UpdateOrder() are working as expected in order to test the shipping calculation logic
+
+This will probably be easier to test instead:
+
+<CodeTabs baseFilePath="code/PureFunction_Good" />

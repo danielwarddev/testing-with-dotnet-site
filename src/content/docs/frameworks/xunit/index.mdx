@@ -1,0 +1,98 @@
+---
+title: xUnit
+description: Temp
+---
+
+import * as path from 'path';
+import CodeTabs from '@components/CodeTabs.astro';
+import { Image } from 'astro:assets';
+import { Card, Code, FileTree, TabItem, Tabs } from "@astrojs/starlight/components";
+import xunitLogo from "./assets/xunit-logo.png"
+
+<Image src={xunitLogo} alt="xUnit logo" width="50" height="50" />
+
+[xUnit](https://xunit.net/) is a popular testing library for .NET, and has easily been around long enough to have an established presence online when searching for how-tos.
+
+It has support for all the regular tools you would need in a testing framework, such as running tests in parallel, parameterized tests, and test setup and teardown. In addition, it also has some established extensions in the form of third-party packages, such as [Xunit.Combinatorial](https://github.com/AArnott/Xunit.Combinatorial).
+
+## Parameterized tests
+
+Many tests are fine to run with the same values every single time. However, you may sometimes want to run the exact same test several times with different values each time. xUnit provides support for this through attributes.
+
+In xUnit, a test will use one of two attributes: `[Fact]` or `[Theory]`. Facts are tests with no parameters, while theories are tests with parameters. 
+
+Theories will also take a second attribute in which to set the parameters in. The most common and simplest of these is `[InlineData]`, but xUnit provides `[MemberData]` and `[ClassData]`, as well.
+
+### Using `[InlineData]`
+
+To use `[InlineData]`, put the values inside the attribute's constructor, as well as the test method's parameters. For example:
+
+<CodeTabs baseFilePath="code/InlineData" />
+
+The arguments must match up with what is given to the attribute. When you run parameterized tests, xUnit displays a different test in the output for each set of parameters the test had:
+
+It also displays the parameters used in that test, so you can see which cases passed and failed.
+
+### Using `[MemberData]` and `[ClassData]`
+
+`[MemberData]` and `[ClassData]` are fairly rare compared to `[InlineData]`, though they provide some more control when needed.
+
+There's only two primary differences between `[MemberData]` and `[ClassData]`:
+
+1. The data in `[MemberData]` must be a [compile-time constant](https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/constants) (just like `[InlineData]`), while `[ClassData]` can be any data.
+2. `[ClassData]` is put in its own class, which you may feel is cleaner.
+
+## Sharing data between tests
+
+_xUnit docs: https://xunit.net/docs/shared-context_
+
+A common need when writing tests is to share some common setup between tests. For example, you may want to do some kind of test setup the same way for all tests in a class, or do it only once for the whole class.
+
+By default, **xUnit will call a test class's constructor once for every test in that class**, before the test runs. You may also include test teardown by inheriting from IDisposable and implementing the Dispose() method in the test class. The Dispose() method runs after each test has completed.
+
+:::caution[Beware of teardowns!]
+Sometimes, it may actually be better to include teardown actions in the constructor, rather than Dispose(). This ensures the teardown happens before the tests run, even if something prevented the teardown from completing on a previous run.
+:::
+
+You may have some test setup that you'd like to happen only once for the entire test class. In this case, you can use xUnit's `IClassFixture<>`. The fixture class itself is just a plain class, and doesn't have to inherit from anything. Your tests that use that class fixture will run its setup code once for the entire class, rather than once per test. The setup code must all be done within the constructor.
+
+For example:
+
+<CodeTabs baseFilePath="code/ClassFixture" />
+
+### TODO: more in this section, CollectionFixture, assembly one also?
+
+### Async test setup
+
+Since it's not possible to use async code in a constructor, you can implement `IAsyncLifetime` if you need to do async setup:
+
+<CodeTabs baseFilePath="code/AsyncLifetime" />
+
+## Running tests in parallel
+
+_xUnit docs: https://xunit.net/docs/running-tests-in-parallel_
+
+By default, every test class you create is a separate **test collection** in xUnit.
+
+Test collections run in parallel with each other. Tests within a collection run sequentially.
+
+For example, with the following test structure:
+
+<FileTree>
+  - CalculatorTests
+    - AddTests.cs
+    - SubtractTests.cs
+  - MyServiceTests.cs
+</FileTree>
+
+The 3 test collections for `AddTests.cs`, `SubtractTests.cs`, and `MyServiceTests.cs` will all run at the same time in parallel. However, for each of those test collections, the individual tests inside of them run sequentially.
+
+### Custom test collections
+
+Although not needed for most use cases, test collections can be configured to override the default behavior using xUnit's `[Collection]` attribute. This can be useful for longer setup (such as with Testcontainers).
+
+In the above example, if we were to make the following changes to our test classes:
+
+<CodeTabs baseFilePath="code/TestCollections" />
+
+then `AddTests.cs` and `SubtractTests.cs` will now run all their tests sequentially in a single test collection called, "Test Collection 1".

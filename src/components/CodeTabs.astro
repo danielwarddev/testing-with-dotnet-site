@@ -29,7 +29,7 @@ const cSharpCode = tryGetFile('.cs');
 const fSharpCode = tryGetFile('.fs');
 const visualBasicCode = tryGetFile('.vb');
 
-if (!cSharpCode && !fSharpCode && !visualBasicCode) {
+if (cSharpCode === null && fSharpCode === null && visualBasicCode === null) {
   throw new Error(`CodeTabs found no .cs, .fs or .vb files for "${baseFilePath}" on page ${Astro.url.pathname}`);
 }
 ---

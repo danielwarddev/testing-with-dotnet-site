@@ -1,0 +1,42 @@
+---
+title: Mocking HttpClient
+description: Temp
+---
+
+import CodeTabs from "@components/CodeTabs.astro";
+
+Regardless of the mocking library used, the typical way to mock `HttpClient` in .NET is not to mock `HttpClient` itself, but to mock its underlying `HttpMessageHandler`, which is what actually makes the HTTP calls.
+
+While any mocking library should be able to mock `HttpMessageHandler` without issues, this site recommends the use of the [RichardSzalay.MockHttp](https://github.com/richardszalay/mockhttp) package. This package accomplishes the same thing as creating a mock for `HttpMessageHandler` yourself, but with a cleaner API and with other useful methods.
+
+Regardless, this page will show how to do it with common mocking libraries, as well.
+
+## RichardSzalay.MockHttp
+
+<CodeTabs baseFilePath="code/MockHttp" />
+
+## Moq
+
+Moq is able to mock `protected` methods using `Protected()`, which can be used to mock `SendAsync()` on `HttpMessageHandler`.
+
+<CodeTabs baseFilePath="code/Moq" />
+
+## NSubstitute
+
+NSubstitute doesn't have an equivalent of Moq's `Protected()` method to mock protected methods, but you can achieve the same thing using reflection, albeit more verbose.
+
+<CodeTabs baseFilePath="code/NSubstitute" />
+
+## FakeItEasy
+
+FakeItEasy's way of mocking protected methods looks similar to NSubstitute's, using `CallTo()`.
+
+<CodeTabs baseFilePath="code/FakeItEasy" />
+
+## Without a mocking library (using a custom test class)
+
+You can also create your own manual fake, creating a test class that inherits from `HttpMessageHandler` and overrides `SendAsync()`. However, this is more verbose, requires maintenance, and is less flexible than using a mocking library.
+
+The following is an example of what a test implementation could look like:
+
+<CodeTabs baseFilePath="code/NoLibrary" />

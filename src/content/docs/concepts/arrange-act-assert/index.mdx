@@ -1,0 +1,18 @@
+---
+title: Arrange, Act, Assert
+description: A guide in my new Starlight docs site.
+---
+
+import CodeTabs from '@components/CodeTabs.astro';
+
+Arrange, Act, Assert (AAA) is a useful guideline when writing tests to help write readable tests. AAA provides a suggested structure for tests in 3 parts - arrange, act, and assert - hence the name.
+
+For example,
+
+<CodeTabs baseFilePath="code/ArrangeActAssert" />
+
+The three parts are:
+
+1. **Arrange**. Set up any necessary mocks, data, etc. that you need for the test.
+2. **Act**. Execute the code being tested. This is often a one-liner.
+3. **Assert**. Verify the results of the test with your expectations. As a general rule, unit tests should try to test only one thing. However, to test "one thing," you may sometimes need to use multiple asserts, so use your best judgement!
