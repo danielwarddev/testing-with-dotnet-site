@@ -1,0 +1,34 @@
+# Pages to do
+
+- [x] Home — replace the default Starlight welcome page
+- [ ] Getting Started — finish the onboarding page
+- **Theory**
+  - [ ] Why Test?
+  - [ ] Testing Pyramid & Other Shapes
+  - [ ] Types of Tests deep-dive
+- **Concepts**
+  - [ ] Test-Driven Development
+  - [ ] Behavior-Driven Development
+  - [ ] Test Patterns
+- **Frameworks**
+  - [ ] xUnit — add collection and assembly fixture guidance
+  - [ ] NUnit — expand the shared-data section
+  - [ ] MSTest
+  - [ ] TUnit
+- **Assertion Libraries**
+  - [ ] Built-in Assertions
+  - [ ] Fluent Assertions
+  - [ ] Shouldly
+  - [ ] Awesome Assertions
+- **Mocking Libraries**
+  - [ ] NSubstitute
+  - [ ] Moq
+  - [ ] FakeItEasy
+- **Libraries**
+  - [ ] AutoFixture
+  - [ ] Testcontainers
+- **How Do I…?**
+  - [ ] More how-to guides — choose specific common testing tasks
+- [ ] Testing with a Database — finish the remaining example and TODO
+- **Naming**
+  - [ ] Naming Tests
