@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pages to do — Testing with .NET</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font: 1rem/1.6 system-ui, sans-serif;
+      --accent: #6d4aff;
+      --muted: color-mix(in srgb, currentColor 68%, transparent);
+    }
+    body { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    header { margin-bottom: 2rem; }
+    h1, h2 { line-height: 1.2; }
+    h1 { margin-bottom: .4rem; }
+    .intro, .note { color: var(--muted); }
+    .progress-row { align-items: center; display: flex; gap: 1rem; margin-top: 1.25rem; }
+    progress { accent-color: var(--accent); flex: 1; height: .8rem; }
+    button { background: transparent; border: 1px solid var(--border); border-radius: .35rem; color: inherit; cursor: pointer; font: inherit; padding: .35rem .7rem; }
+    .sitemap, .sitemap ul { list-style: none; margin: 0; padding: 0; }
+    .sitemap ul { padding-left: 1.5rem; }
+    .sitemap > li { padding: .2rem 0; }
+    label { align-items: baseline; cursor: pointer; display: flex; gap: .7rem; }
+    input[type="checkbox"] { accent-color: var(--accent); flex: 0 0 auto; height: 1rem; margin: .2rem 0 0; width: 1rem; }
+    input:checked + span { color: var(--muted); text-decoration: line-through; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Pages to do</h1>
+    <p class="intro">A working checklist for the Testing with .NET site. Checkbox progress is saved in this browser.</p>
+    <div class="progress-row">
+      <progress id="progress" value="0" max="1" aria-label="Checklist progress"></progress>
+      <output id="progress-label" for="progress" aria-live="polite">0 of 0 complete</output>
+      <button id="reset" type="button">Reset</button>
+    </div>
+  </header>
+  <main>
+    <p class="note">Unfinished pages and explicit TODOs, arranged like the site map. Completed pages are omitted.</p>
+    <ul class="sitemap">
+      <li><label><input type="checkbox" data-task="home"><span>Home — replace the default Starlight welcome page</span></label></li>
+      <li><label><input type="checkbox" data-task="getting-started"><span>Getting Started — finish the onboarding page</span></label></li>
+      <li><strong>Theory</strong>
+        <ul>
+          <li><label><input type="checkbox" data-task="why-test"><span>Why Test?</span></label></li>
+          <li><label><input type="checkbox" data-task="testing-pyramid"><span>Testing Pyramid &amp; Other Shapes</span></label></li>
+          <li><label><input type="checkbox" data-task="test-types"><span>Types of Tests deep-dive</span></label></li>
+        </ul>
+      </li>
+      <li><strong>Concepts</strong>
+        <ul>
+          <li><label><input type="checkbox" data-task="tdd"><span>Test-Driven Development</span></label></li>
+          <li><label><input type="checkbox" data-task="bdd"><span>Behavior-Driven Development</span></label></li>
+          <li><label><input type="checkbox" data-task="test-patterns"><span>Test Patterns</span></label></li>
+        </ul>
+      </li>
+      <li><strong>Frameworks</strong>
+        <ul>
+          <li><label><input type="checkbox" data-task="xunit"><span>xUnit — add collection and assembly fixture guidance</span></label></li>
+          <li><label><input type="checkbox" data-task="nunit"><span>NUnit — expand the shared-data section</span></label></li>
+          <li><label><input type="checkbox" data-task="mstest"><span>MSTest</span></label></li>
+          <li><label><input type="checkbox" data-task="tunit"><span>TUnit</span></label></li>
+        </ul>
+      </li>
+      <li><strong>Assertion Libraries</strong>
+        <ul>
+          <li><label><input type="checkbox" data-task="built-in-assertions"><span>Built-in Assertions</span></label></li>
+          <li><label><input type="checkbox" data-task="fluent-assertions"><span>Fluent Assertions</span></label></li>
+          <li><label><input type="checkbox" data-task="shouldly"><span>Shouldly</span></label></li>
+          <li><label><input type="checkbox" data-task="awesome-assertions"><span>Awesome Assertions</span></label></li>
+        </ul>
+      </li>
+      <li><strong>Mocking Libraries</strong>
+        <ul>
+          <li><label><input type="checkbox" data-task="nsubstitute"><span>NSubstitute</span></label></li>
+          <li><label><input type="checkbox" data-task="moq"><span>Moq</span></label></li>
+          <li><label><input type="checkbox" data-task="fakeiteasy"><span>FakeItEasy</span></label></li>
+        </ul>
+      </li>
+      <li><strong>Libraries</strong>
+        <ul>
+          <li><label><input type="checkbox" data-task="autofixture"><span>AutoFixture</span></label></li>
+          <li><label><input type="checkbox" data-task="testcontainers"><span>Testcontainers</span></label></li>
+        </ul>
+      </li>
+      <li><strong>How Do I…?</strong>
+        <ul>
+          <li><label><input type="checkbox" data-task="how-to-guides"><span>More how-to guides — choose specific common testing tasks</span></label></li>
+        </ul>
+      </li>
+      <li><label><input type="checkbox" data-task="database"><span>Testing with a Database — finish the remaining example and TODO</span></label></li>
+      <li><strong>Naming</strong>
+        <ul>
+          <li><label><input type="checkbox" data-task="naming-tests"><span>Naming Tests</span></label></li>
+        </ul>
+      </li>
+    </ul>
+  </main>
+  <script>
+    const storageKey = 'testing-with-dotnet-pages-to-do';
+    const checkboxes = [...document.querySelectorAll('input[type="checkbox"][data-task]')];
+    const progress = document.querySelector('#progress');
+    const progressLabel = document.querySelector('#progress-label');
+
+    function updateProgress() {
+      const done = checkboxes.filter((checkbox) => checkbox.checked).length;
+      progress.max = checkboxes.length;
+      progress.value = done;
+      progressLabel.value = `${done} of ${checkboxes.length} complete`;
+    }
+
+    try {
+      const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+      for (const checkbox of checkboxes) {
+        checkbox.checked = saved[checkbox.dataset.task] === true;
+      }
+    } catch {
+      localStorage.removeItem(storageKey);
+    }
+
+    for (const checkbox of checkboxes) {
+      checkbox.addEventListener('change', () => {
+        const saved = Object.fromEntries(checkboxes.map((item) => [item.dataset.task, item.checked]));
+        localStorage.setItem(storageKey, JSON.stringify(saved));
+        updateProgress();
+      });
+    }
+
+    document.querySelector('#reset').addEventListener('click', () => {
+      for (const checkbox of checkboxes) checkbox.checked = false;
+      localStorage.removeItem(storageKey);
+      updateProgress();
+    });
+
+    updateProgress();
+  </script>
+</body>
+</html>

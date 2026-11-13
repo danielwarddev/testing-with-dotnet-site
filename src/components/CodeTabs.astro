@@ -25,9 +25,20 @@ function tryGetFile(fileExtension: string): string | null {
   return codeFiles[fullPath] ?? null;
 }
 
-const cSharpCode = tryGetFile('.cs');
-const fSharpCode = tryGetFile('.fs');
-const visualBasicCode = tryGetFile('.vb');
+function tryGetFileAndWarnIfBlank(fileExtension: string): string | null {
+  const code = tryGetFile(fileExtension);
+
+  if (code !== null && code.trim() === '') {
+    console.warn(`CodeTabs skipped the empty ${fileExtension} file for "${baseFilePath}" on page ${Astro.url.pathname}`);
+    return '';
+  }
+
+  return code;
+}
+
+const cSharpCode = tryGetFileAndWarnIfBlank('.cs');
+const fSharpCode = tryGetFileAndWarnIfBlank('.fs');
+const visualBasicCode = tryGetFileAndWarnIfBlank('.vb');
 
 if (cSharpCode === null && fSharpCode === null && visualBasicCode === null) {
   throw new Error(`CodeTabs found no .cs, .fs or .vb files for "${baseFilePath}" on page ${Astro.url.pathname}`);

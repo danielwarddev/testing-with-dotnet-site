@@ -2,7 +2,7 @@ import { within } from '@testing-library/dom';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { Window } from 'happy-dom';
 import { readdirSync, readFileSync } from 'node:fs';
-import { beforeAll, expect, it } from 'vitest';
+import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import CodeTabs from '@components/CodeTabs.astro';
 
 const PAGE_PATH = '/fake-test-page/';
@@ -12,6 +12,10 @@ let container: AstroContainer;
 
 beforeAll(async () => {
 	container = await AstroContainer.create();
+});
+
+afterEach(() => {
+	vi.restoreAllMocks();
 });
 
 it('should render a C#, F# and Visual Basic tab with the code from each file', async () => {
@@ -52,6 +56,23 @@ it('should not render a tab for a code file that is empty', async () => {
 	const tabs = getTabData(html);
 
 	expect(tabs.map((tab) => tab.label)).toEqual(['C#', 'Visual Basic']);
+});
+
+it('should not render a tab for a code file that only contains whitespace', async () => {
+	const html = await renderComponent('code/WhitespaceFSharp');
+	const tabs = getTabData(html);
+
+	expect(tabs.map((tab) => tab.label)).toEqual(['C#', 'Visual Basic']);
+});
+
+it('should warn about each empty code file', async () => {
+	const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+	await renderComponent('code/EmptyFSharp');
+
+	expect(warn.mock.calls).toEqual([
+		[`CodeTabs skipped the empty .fs file for "code/EmptyFSharp" on page ${PAGE_PATH}`],
+	]);
 });
 
 it('should not render any tabs when every code file is empty', async () => {

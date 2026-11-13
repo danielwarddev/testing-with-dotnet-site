@@ -36,15 +36,3 @@ https://tailwindcss.com/docs/adding-custom-styles#using-custom-css
 	height: auto;
 	margin: 0;
 }
-
-/* Decrease font size as content width increases and vice versa
- * This keeps the left side of the main content from getting too big */
-:root {
-	--sl-content-width: 70rem;
-	font-size: 15px;
-}
-
-/* Make the site logo bigger */
-a.site-title > img {
-	--sl-nav-height: 8rem;
-}
